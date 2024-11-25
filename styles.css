@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fira Code', Fira;
+    background-color: #121212;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.terminal {
+    width: 100%;
+    max-width: 2500px;
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+}
+
+.output {
+    flex-grow: 1;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.input {
+    background-color: #121212;
+    color: white;
+    border: none;
+    border-top: 1px solid #444;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.input:focus {
+    outline: none;
+}
