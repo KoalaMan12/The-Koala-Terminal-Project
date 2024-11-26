@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Cloner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            font-size: 24px;
+        }
+        #content {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Proxy Cloner</h1>
+<p>Loading content from the provided URL...</p>
+<div id="content"></div>
+
+<script>
+    // Get the URL parameter from the query string
+    const params = new URLSearchParams(window.location.search);
+    const targetUrl = params.get('url');
+    
+    if (!targetUrl) {
+        document.getElementById('content').innerHTML = '<span class="error">Error: No URL provided for proxying.</span>';
+    } else {
+        // Use a CORS Proxy URL (All Origins)
+        const proxyUrl = 'https://api.allorigins.win/get?url=';  // AllOrigins Proxy
+        
+        // Fetch the page content (HTML) through CORS proxy
+        fetch(proxyUrl + encodeURIComponent(targetUrl))
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // Parse the JSON data
+            })
+            .then(data => {
+                if (!data || !data.contents) {
+                    throw new Error('Empty or invalid response received.');
+                }
+                const htmlContent = data.contents;
+                const contentDiv = document.getElementById('content');
+                
+                // Display the fetched content in the content div
+                contentDiv.innerHTML = htmlContent;
+
+                // Find and inject any linked CSS files into the head
+                const cssLinks = contentDiv.querySelectorAll('link[rel="stylesheet"]');
+                cssLinks.forEach(link => {
+                    const newLink = document.createElement('link');
+                    newLink.rel = 'stylesheet';
+                    newLink.href = link.href;
+                    document.head.appendChild(newLink);
+                });
+
+                // Find and inject any JS scripts into the body or head
+                const scripts = contentDiv.querySelectorAll('script');
+                scripts.forEach(script => {
+                    if (script.src) {
+                        const newScript = document.createElement('script');
+                        newScript.src = script.src;
+                        newScript.onload = function() {
+                            console.log(`${script.src} loaded successfully.`);
+                        };
+                        document.body.appendChild(newScript);
+                    } else if (script.innerHTML) {
+                        const newScript = document.createElement('script');
+                        newScript.innerHTML = script.innerHTML;
+                        document.body.appendChild(newScript);
+                    }
+                });
+            })
+            .catch(err => {
+                console.error("Error fetching website content: ", err);
+                document.getElementById('content').innerHTML = `<span class="error">Error: Unable to fetch the website content. ${err.message}</span>`;
+            });
+    }
+</script>
+
+</body>
+</html>
