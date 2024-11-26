@@ -1,62 +1,30 @@
+// Getting references to the input and output elements for terminal simulation
 const inputElement = document.getElementById('input');
 const outputElement = document.getElementById('output');
 
-// Command responses
+// Define the available commands
 const commands = {
-    'help': 'Available commands:\n- scpt: Open a new scripting tab\n- help: Show this help message\n- echo: [text]: Repeat your input\n- clear: Clear the terminal\n- rep: [number] [text]: Repeat the text [number] of times\n- newtab: Make a new terminal window\n- getpub: Get your public IP address\n- location: Get the location of the current page\n- modules: Show a list of all available modules',
-    
+    'help': 'Available commands:\n- proxy [url]: Proxy a website\n- help: Show this help message\n- echo: [text]: Repeat your input\n- clear: Clear the terminal\n- getpub: Get your public IP address\n- location: Get the location of the current page\n- modules: Show a list of all available modules',
     'clear': function() {
         outputElement.innerHTML = '';
     },
-    
     'echo': function(text) {
         return text || 'No input provided for echo.';
     },
-
     'location': function() {
-        return "Location: " + window.location.href; 
+        return "Location: " + window.location.href;
     },
-
-    'getpub': function() {
-        // Fetch public IP address using ipify API
-        return fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => `Public IP Address: ${data.ip}`)
-            .catch(() => 'Unable to fetch IP address. Please check your connection or try again later.');
-    },
-
-    'newtab': function() {
-        // Open a new terminal window (for demonstration, we can just open a new tab to an empty page or another URL)
-        window.open('index.html', '_blank'); // Open a new blank tab
-        return 'Opened a new tab.';
-    },
-    
-    'scpt': function() {
-        // Open a new terminal window (for demonstration, we can just open a new tab to an empty page or another URL)
-        window.open('textindex.html', '_blank'); // Open a new blank tab
-        return 'Opened a script tab.';
-    },
-
-    'rep': function(input) {
-        // Split the input into the number and text
-        const parts = input.split(' ');
-        const repeatCount = parseInt(parts[0], 10); // Get the repeat count as a number
-        const textToRepeat = parts.slice(1).join(' '); // Get the text to repeat (may include spaces)
-
-        if (isNaN(repeatCount)) {
-            return 'Invalid number specified for repetition.';
+    'proxy': function(url) {
+        if (!url) {
+            return 'Please provide a valid URL to proxy.';
         }
-        if (!textToRepeat) {
-            return 'No text provided for repetition.';
-        }
+        
+        // Open the proxy page with the provided URL
+        window.open(`proxy.html?url=${encodeURIComponent(url)}`, '_blank');
+        return `Attempting to proxy: ${url}`;
+    },
 
-        let result = '';
-        for (let i = 0; i < repeatCount; i++) {
-            result += textToRepeat + '\n';
-        }
-        return result;
-    }
-    
+    // Other commands...
 };
 
 // Handle user input
